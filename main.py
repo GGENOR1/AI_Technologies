@@ -3,6 +3,7 @@ import os
 import time
 import requests
 
+from calculations import calculate_centralities
 from config import LANGUAGE, URL, VK_METHOD_VERSION, VK_TOKEN
 from graph_visualizer import visualize_friends_graph
 
@@ -153,11 +154,58 @@ class UserFriendsFetcher:
                     print(f"Saved friends for user {user_id}.")
 
 
+    def fetch_friends_of_friends(self, friends_file, output_file_2):
+        """Проходит по всем друзьям и получает друзей их друзей"""
+        with open(friends_file, 'r', encoding='utf-8') as file:
+            try:
+                data = json.load(file)
+            except json.JSONDecodeError:
+                print("Ошибка при чтении JSON файла друзей.")
+                return
+
+        new_data = {}
+
+        for user_id, user_data in data.items():
+            user_friends = user_data.get('friends', [])
+
+            for friend in user_friends:
+                friend_id = friend['id']
+                friend_first_name = friend['first_name']
+                friend_last_name = friend['last_name']
+
+                print(f"Fetching friends for friend ID {friend_id}...")
+
+                time.sleep(2)  
+                friends_of_friend = self.fetch_friends(friend_id)
+
+                friend['friends'] = friends_of_friend
+
+                print(f"Saved friends of friend {friend_id}.")
+
+            new_data[user_id] = {
+                'first_name': user_data['first_name'],
+                'last_name': user_data['last_name'],
+                'friends': user_friends  
+            }
+
+        with open(output_file_2, 'w', encoding='utf-8') as file:
+            json.dump(new_data, file, ensure_ascii=False, indent=4)
+
+
 if __name__ == '__main__':
 
     fetcher = UserFriendsFetcher(token=VK_TOKEN)
     input_file = 'data/group_ids.json'
+    input_file2 = 'data/friends_output.json'
     output_file = 'data/friends_output.json'
-
+    output_file2 = 'data/friends_output2.json'
     fetcher.process_users(input_file, output_file)
-    visualize_friends_graph(output_file)
+    visualize_friends_graph(output_file2)
+    fetcher.fetch_friends_of_friends(input_file2, output_file2)
+    
+    centralities = calculate_centralities('data/group_ids.json', 'data/friends_output2.json')
+    for user_id, values in centralities.items():
+        print(f'User {user_id}:')
+        print(f"  Betweenness: {values['betweenness']}")
+        print(f"  Closeness: {values['closeness']}")
+        print(f"  Eigenvector: {values['eigenvector']}")
