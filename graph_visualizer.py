@@ -61,16 +61,6 @@ def remove_single_edge_nodes(G):
     G.remove_nodes_from(nodes_to_remove)
     return G
 
-# def remove_single_edge_nodes(G):
-#     """Функция для удаления узлов с одной связью.""
-
-#     Args:
-#         G (graph.Graph): Граф
-
-#     Returns:
-#         graph.Graph: Преобразованный граф
-#     """
-#     return G.subgraph([node for node, degree in dict(G.degree()).items() if degree > 1])
 
 def visualize_friends_graph(output_file='"data/friends_output2.json"', output_html='data/friends_graph.html'):
     """Основная функция для создания/визуализации графа.
