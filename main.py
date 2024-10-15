@@ -200,9 +200,9 @@ if __name__ == '__main__':
     output_file = 'data/friends_output.json'
     output_file2 = 'data/friends_output2.json'
     fetcher.process_users(input_file, output_file)
-    visualize_friends_graph(output_file2)
-    fetcher.fetch_friends_of_friends(input_file2, output_file2)
     
+    fetcher.fetch_friends_of_friends(input_file2, output_file2)
+    visualize_friends_graph(output_file2)
     centralities = calculate_centralities('data/group_ids.json', 'data/friends_output2.json')
     for user_id, values in centralities.items():
         print(f'User {user_id}:')
