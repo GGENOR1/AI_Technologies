@@ -70,13 +70,19 @@ def calculate_centralities(group_ids_file, friends_data_file):
         print("Расчет eigenvector_centrality закончен")
 
     centralities = {}
+    
     for user_id in group_ids:
         centralities[user_id] = {
             'betweenness': betweenness_centrality.get(user_id, 0),
             'closeness': closeness_centrality.get(user_id, 0),
             'eigenvector': eigenvector_centrality.get(user_id, 0)
+
         }
 
     return centralities
 
-centralities = calculate_centralities('data/group_ids.json', 'data/friends_output2.json')
+# centralities = calculate_centralities('data/group_ids.json', 'data/friends_output2.json')
+
+
+    # 268235974,
+    # 200955746,
